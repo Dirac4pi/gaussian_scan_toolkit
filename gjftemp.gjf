@@ -1,0 +1,10 @@
+%oldchk=guess.chk
+%mem=50000MB
+%nprocshared=32
+#p def2tzvp td=nstates=10 wb97xd IOp(9/40=4) scrf=(smd,solvent=generic)
+
+int1e-sptd
+
+-1 2
+
+eps=33.6
