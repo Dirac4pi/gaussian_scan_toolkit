@@ -10,14 +10,24 @@ from scipy.interpolate import make_interp_spline
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-ev2har = 0.03675
-har2eV = 27.2114
-nstat  = 9    # number of excited states, same as TD(nstates)
-nscan  = 11   # number of scan points
-xlabel = 'Reactoion Step'              # might be bond length or sth
+nm2eV = 1239.84
+har2eV = 27.2113863
+nstat  = 5    # number of excited states, same as TD(nstates)
+nscan  = 21   # number of scan points
+xlabel = 'C-S Length / Angstrom'     # might be bond length or sth
 ylabel = 'Electronic Energy / eV'
-count = linspace(1, nscan, nscan)      # linspace(start, end, nscan)
-count_smooth = linspace(1, nscan, 100) # linspace(start, end, nscan)
+count = linspace(1.7, 2.7, nscan)      # linspace(start, end, nscan)
+count_smooth = linspace(1.7, 2.7, 100) # linspace(start, end, nscan)
+diabaticlow = [[]]
+labeldiabaticlow = []
+colordiabaticlow = []
+diabaticmid = [[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]]
+labeldiabaticmid = ['D4 diabatic state']
+colordiabaticmid = ['#005b23']
+diabatichigh = [[]]
+labeldiabatichigh = []
+colordiabatichigh = []
+nmlines = [390]    # axhline in nm
 
 # determine the possible excited state spin multiplicity
 # using the Wigner-Eckart theorem
@@ -41,35 +51,35 @@ if spin == 1 or spin == 2:
   S2low = 0.5*float(spin-3)*(0.5*float(spin-3)+1.0)
   colorlow = '#BF1D2D'
 if spin == 1:
-  labelmid = 'single excited state'
-  labelhigh = 'triplet excited state'
+  labelmid = 'single adiabatic state'
+  labelhigh = 'triplet adiabatic state'
 elif spin == 2:
-  labelmid = 'doublet excited state'
-  labelhigh = 'quartet excited state'
+  labelmid = 'doublet adiabatic state'
+  labelhigh = 'quartet adiabatic state'
 elif spin == 3:
-  labellow = 'singlet excited state'
-  labelmid = 'triplet excited state'
-  labelhigh = 'quintet excited state'
+  labellow = 'singlet adiabatic state'
+  labelmid = 'triplet adiabatic state'
+  labelhigh = 'quintet adiabatic state'
 elif spin == 4:
-  labellow = 'doublet excited state'
-  labelmid = 'quartet excited state'
-  labelhigh = 'sextet excited state'
+  labellow = 'doublet adiabatic state'
+  labelmid = 'quartet adiabatic state'
+  labelhigh = 'sextet adiabatic state'
 elif spin == 5:
-  labellow = 'triplet excited state'
-  labelmid = 'quintet excited state'
-  labelhigh = 'septet excited state'
+  labellow = 'triplet adiabatic state'
+  labelmid = 'quintet adiabatic state'
+  labelhigh = 'septet adiabatic state'
 elif spin == 6:
-  labellow = 'quartet excited state'
-  labelmid = 'sextet excited state'
-  labelhigh = 'octet excited state'
+  labellow = 'quartet adiabatic state'
+  labelmid = 'sextet adiabatic state'
+  labelhigh = 'octet adiabatic state'
 elif spin == 7:
-  labellow = 'quintet excited state'
-  labelmid = 'septet excited state'
-  labelhigh = 'nonet excited state'
+  labellow = 'quintet adiabatic state'
+  labelmid = 'septet adiabatic state'
+  labelhigh = 'nonet adiabatic state'
 elif spin == 8:
-  labellow = 'sextet excited state'
-  labelmid = 'octet excited state'
-  labelhigh = 'decuplet excited state'
+  labellow = 'sextet adiabatic state'
+  labelmid = 'octet adiabatic state'
+  labelhigh = 'decuplet adiabatic state'
 labelgs = 'ground state'
 # characterization of ground states
 GS = []
@@ -96,8 +106,6 @@ while j <= nscan:
     ZERO = float(line[line.find('=')+3:line.find('A.U.')-6])
   GS.append((float(line[line.find('=')+3:line.find('A.U.')-6])-ZERO)*har2eV)
   j += 1
-GS_smooth = make_interp_spline(count, GS)(count_smooth)
-plt.plot(count_smooth, GS_smooth, linewidth=2, color=colorgs)
 
 # characterization of excited states
 i = 1
@@ -141,6 +149,9 @@ while i <= nstat:
     j += 1
   i += 1
 
+# plot GS
+GS_smooth = make_interp_spline(count, GS)(count_smooth)
+plt.plot(count_smooth, GS_smooth, linewidth=2, color=colorgs)
 # plot ESmid
 midmin = len(ESmid[0])
 for i in range(nscan):
@@ -218,8 +229,42 @@ else:
       Line2D([0], [0], color=colorgs, lw=2, label=labelgs),
       Line2D([0], [0], color=colormid, lw=2, label=labelmid)
     ]
-plt.title('Adiabatic Potential Energy Surfaces')
-plt.legend(handles=legend_handles)
+
+# plot diabatic states
+if len(diabaticlow[0]) != 0:
+  for i in range(len(diabaticlow)):
+    DES = []
+    for j in range(len(diabaticlow[i])):
+      DES.append(ESlow[j][diabaticlow[i][j]-1])
+    DES_smooth = make_interp_spline(count, DES)(count_smooth)
+    plt.plot(count_smooth,DES_smooth,linewidth=2,\
+             color=colordiabaticlow[i],label=labeldiabaticlow[i])
+if len(diabaticmid[0]) != 0:
+  for i in range(len(diabaticmid)):
+    DES = []
+    for j in range(len(diabaticmid[i])):
+      DES.append(ESmid[j][diabaticmid[i][j]-1])
+    DES_smooth = make_interp_spline(count, DES)(count_smooth)
+    plt.plot(count_smooth,DES_smooth,linewidth=2,\
+             color=colordiabaticmid[i],label=labeldiabaticmid[i])
+if len(diabatichigh[0]) != 0:
+  for i in range(len(diabatichigh)):
+    DES = []
+    for j in range(len(diabatichigh[i])):
+      DES.append(EShigh[j][diabatichigh[i][j]-1])
+    DES_smooth = make_interp_spline(count, DES)(count_smooth)
+    plt.plot(count_smooth,DES_smooth,linewidth=2,\
+             color=colordiabatichigh[i],label=labeldiabatichigh[i])
+
+# plot axhline
+if len(nmlines) != 0:
+  for i in range(len(nmlines)):
+    plt.axhline(y=nm2eV/nmlines[i], linestyle='--', linewidth=1.0, color='k')
+    plt.text(min(count),nm2eV/nmlines[i]-0.15,f'{nmlines[i]}nm',va='center',ha='left')
+ax = plt.gca()
+existing_handles, existing_labels = ax.get_legend_handles_labels()
+all_handles = legend_handles + existing_handles
+plt.legend(handles=all_handles)
 plt.xlabel(xlabel)
 plt.ylabel(ylabel)
 plt.show()

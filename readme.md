@@ -8,7 +8,7 @@ rigid/relaxed scan calculations.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Inspired by the [SCANsplit program](http://sobereva.com/199)
 developed by Sobereva, this script can be used to extract the structures from
 all frames in the Gaussian rigid/relaxed scan output file and generate severial
-single-point GJF files for each frame according to the GJF template. You can
+single-point GJF files for each frame according to the GJF template. One can
 customize the implicit solvent model in the GJF template or read the initial
 wavefunction from %oldchk without worrying that they will be ignored. The script
 could be useful if you need to analyze the evolution of electronic structure or
@@ -18,16 +18,18 @@ plot adiabatic potential energy surfaces of excited states, etc. Usage:
 ## scanplot.py
 
 &nbsp;&nbsp;&nbsp;&nbsp;Up to 3 Gaussian rigid/relaxed scanning curves can be
-plotted on a single canvas for easier analysis and presentation. You may also
-customize the plotting if needed. Usage:
+plotted on a single canvas for easier analysis and presentation. With simple
+setup, it can produce **publishable-quality** images. Usage:
 `python scanplot.py scanout1.log (scanout2.log) (scanout3.log)`.<br>
 
 ## apesplot.py
 
 &nbsp;&nbsp;&nbsp;&nbsp;This script is used to plot the adiabatic potential
-energy surfaces(APES) of multiple excited states distinguished by spin
-multiplicity. (Based on the Wigner-Eckart theorem, at most 3 spin states are
-reachable). It should be used in conjunction with scansplite.py. Usage:
-place all the Gaussian single-point excited state calculation output files that
-you are interested in into the same directory as apesplot.py and then
+energy surfaces(APESs) of multiple excited states distinguished by spin
+multiplicity, based on the Wigner-Eckart theorem(2 or 3 spin are reachable). It
+should be used in conjunction with `scansplite.py`. With simple setup, it can
+produce **publishable-quality** images. Usage: place all the Gaussian
+single-point excited state calculation output files into the `apesplot.py`
+directory，modify the scanning settings at the top of the `apesplot.py` (one can
+also add the diabatic states and excitation wavelength), then run
 `python apesplot.py`.<br>
