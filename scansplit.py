@@ -201,7 +201,7 @@ def scansplit(scanout:str, gjftemp:str) -> None:
       if 'The following ModRedundant' in line:
         scantype = 'modredundant'
         break
-      elif 'scan the potential surface' in line:
+      elif 'Scan the potential surface' in line:
         scantype = 'scan'
         break
   if scantype == 'scan':
