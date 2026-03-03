@@ -83,10 +83,10 @@ def load_geom_scan(scanout:str):
       if not line:
         break
       iline += 1
-      if 'Z-Matrix orientation:' in line:
+      if 'orientation:' in line:
         scan.append(iline+4)
   if len(scan) == 0:
-    print('try Input orientation / Z-Matrix orientation / Standard orientation')
+    print('No orientation information found')
     sys.exit(1)
   with open(scanout, 'r') as f:
     lines = f.readlines()
@@ -124,23 +124,25 @@ def load_geom_modredundant(scanout:str):
     print(f'{Natom} atoms found in molecule')
   scan = []
   with open(scanout, 'r') as f:
+    lines = f.readlines()
+  with open(scanout, 'r') as f:
     iline = 0
-    opted = False
     while True:
       line = f.readline()
       if not line:
         break
       iline += 1
-      if 'Optimized Parameters' in line:
-        opted = True
-      if opted and 'Input orientation:' in line:
-        opted = False
-        scan.append(iline+4)
+      if 'Optimization completed.' in line:
+        jline = iline
+        while True:
+          if 'orientation:' in lines[jline]:
+            scan.append(jline+5)
+            print(lines[jline])
+            break
+          jline -= 1
   if len(scan) == 0:
-    print('try Input orientation / Z-Matrix orientation / Standard orientation')
+    print('No orientation information found')
     sys.exit(1)
-  with open(scanout, 'r') as f:
-    lines = f.readlines()
   geom = [[] for _ in range(len(scan))]
   for i in range(len(scan)):
     j = scan[i]
@@ -201,7 +203,7 @@ def scansplit(scanout:str, gjftemp:str) -> None:
       if 'The following ModRedundant' in line:
         scantype = 'modredundant'
         break
-      elif 'Scan the potential surface' in line:
+      elif 'scan the potential surface' in line:
         scantype = 'scan'
         break
   if scantype == 'scan':
